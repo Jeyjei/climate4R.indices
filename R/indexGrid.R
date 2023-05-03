@@ -148,7 +148,8 @@ indexGrid <- function(tn = NULL,
   # Member loop
   message("[", Sys.time(), "] Calculating ", index.code, " ...")
   out.m <- apply_fun(1:n.mem, function(m){
-     if (sum(b) == 1 & is.null(baseline) & metadata$indexfun != "agroindexFAO" & metadata$indexfun != "agroindexFAO_tier1") {
+     if (sum(b) == 1 & is.null(baseline) & metadata$indexfun != "agroindexFAO" & 
+         metadata$indexfun != "agroindexFAO_tier1" & metadata$indexfun != "agroindex_agroclim") {
         # Indices from a single variable
         aggr.arg <- switch(time.resolution,
                            "month" = "aggr.m",
@@ -196,7 +197,7 @@ indexGrid <- function(tn = NULL,
         }
       }
       # EXCEPTION for FAO INDICES (require lat, dates, and NO temporal subsetting)
-      if (metadata$indexfun %in% c("agroindexFAO", "agroindexFAO_tier1")) {
+      if (metadata$indexfun %in% c("agroindexFAO", "agroindexFAO_tier1", "agroindex_agroclim")) {
         if (time.resolution != "year") message(index.code, " is calculated yaear by year by definition. argument time.resolution ignored.")
         out.aux <- suppressMessages(aggregateGrid(grid.list.aux[[1]], aggr.y = list(FUN = "mean", na.rm = TRUE)))
         input.arg.list <- lapply(grid.list.aux, function(d) d[["Data"]])
