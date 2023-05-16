@@ -25,26 +25,29 @@
 #'
 #'    \strong{EHE}
 #'
-#'    \strong{GDD}
+#'    \strong{GDD_WI}
 #'
 #'    \strong{HI}
 #'
 #'    \strong{BEDD}
 #'
+#'    \strong{BBLI}
+#'
 #' @author JJ. Velasco
 #' @export
 
 agroindex_agroclim <- function(index.code, ...) {
-  choices <- c(
+
+    choices <- c(
     "TM_cold", "TM_warm", "FD_first", "FD_last", "FD_num",
     "Tth_first", "GST", "FD_prob", "Tth_prob", "EHE",
-    "GDD", "HI", "BEDD"
+    "GDD_WI", "HI", "BEDD", "BBLI"
   )
   if (!index.code %in% choices) stop("Non valid index selected: Use indexShow() to select an index.")
 
-  # Remove "lat" argument when index.code is not in c("GDD", "GST", "HI", "BEDD")
+  # Remove "lat" argument when index.code is not in c("GDD_WI", "GST", "HI", "BEDD", "BBLI")
   input.arg.list <- list(...)
-  if (!index.code %in% c("GDD", "GST", "HI", "BEDD")) input.arg.list$lat <- null
+  if (!index.code %in% c("GDD_WI", "GST", "HI", "BEDD", "BBLI")) input.arg.list$lat <- NULL
 
   # Apply the atomic function
   do.call(index.code, input.arg.list)
@@ -67,10 +70,17 @@ agroindex_agroclim <- function(index.code, ...) {
 #' @export
 
 year_StartEnd <- function(dates, year, year.start = NULL, year.end = NULL) {
+   
   if (!is.null(year.start) & !is.null(year.end)) {
     # Add year to year.start and year.end
     year.start.c <- paste(as.character(year), year.start, sep = "-")
-    year.end.c <- paste(as.character(year), year.start, sep = "-")
+    year.end.c <- paste(as.character(year), year.end, sep = "-")
+
+    # If year.end is less than year.start it will mean that data for 2 contiguous years is needed:
+    # year-year.start ---> (year+1)-year.end
+    if (year.start.c > year.end.c) {
+      year.end.c <- paste(as.character(year + 1), year.end, sep = "-")
+    }
 
     ind.start <- which(dates[, 1] == as.numeric(substr(year.start.c, 1, 4)) & # start of the year (as defined by the user)
       dates[, 2] == as.numeric(substr(year.start.c, 6, 7)) &
@@ -159,6 +169,8 @@ TM_cold <- function(tn, dates, type_output = "temp", year = NULL, year.start = N
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
@@ -238,6 +250,8 @@ TM_warm <- function(tx, dates, type_output = "temp", year = NULL, year.start = N
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
@@ -265,12 +279,12 @@ TM_warm <- function(tx, dates, type_output = "temp", year = NULL, year.start = N
 #' @param year.start (Optional) Day [in "MM-DD" format] defining the beginning of a portion of interest within each year (e.g., the agronomic season).
 #' @param year.end (Optional) Day [in "MM-DD" format] defining the end of a portion of interest within each year (e.g., the agronomic season).
 #' @param pnan Any year with a percentage of NA data above "pnan" will be ignored. The default value is 25.
-#' @details Depending on argument type_output, the output will be a numeric value with the month (type_output = "month") or with temperature (type_output = "temp") per year.
+#' @details Depending on argument type_output, the output will be a numeric value with the julian day (type_output = "doy") or with data format "dd-mm" (type_output = "date").
 #' @author JJ. Velasco
 #' @examples
 #'
-#' index <- FD_first(tx, dates, "doy", 33) # call to the function
-#' index <- FD_first(tx, dates, "date", 33, # call to the function
+#' index <- FD_first(tn, dates, "doy", 33) # call to the function
+#' index <- FD_first(tn, dates, "date", 33, # call to the function
 #'   year = 1994:2018,
 #'   year.start = "03-21",
 #'   year.end = "10-15"
@@ -321,12 +335,14 @@ FD_first <- function(tn, dates, type_output = "doy", threshold = 0, year = NULL,
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
 }
-# index <- FD_first(tx, dates, "doy", 33) # call to the function
-# index <- FD_first(tx, dates, "date", 33, # call to the function
+# index <- FD_first(tn, dates, "doy", 33) # call to the function
+# index <- FD_first(tn, dates, "date", 33, # call to the function
 #   year = 1994:2018,
 #   year.start = "03-21",
 #   year.end = "10-15"
@@ -347,7 +363,7 @@ FD_first <- function(tn, dates, type_output = "doy", threshold = 0, year = NULL,
 #' @param year.start (Optional) Day [in "MM-DD" format] defining the beginning of a portion of interest within each year (e.g., the agronomic season).
 #' @param year.end (Optional) Day [in "MM-DD" format] defining the end of a portion of interest within each year (e.g., the agronomic season).
 #' @param pnan Any year with a percentage of NA data above "pnan" will be ignored. The default value is 25.
-#' @details Depending on argument type_output, the output will be a numeric value with the month (type_output = "month") or with temperature (type_output = "temp") per year.
+#' @details Depending on argument type_output, the output will be a numeric value with the julian day (type_output = "doy") or with data format "dd-mm" (type_output = "date").
 #' @author JJ. Velasco
 #' @examples
 #'
@@ -403,6 +419,8 @@ FD_last <- function(tn, dates, type_output = "doy", threshold = 0, year = NULL, 
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
@@ -483,6 +501,8 @@ FD_num <- function(tn, dates, threshold = 0, year = NULL, year.start = NULL, yea
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
@@ -568,6 +588,8 @@ Tth_first <- function(tx, dates, type_output = "doy", threshold = 35, threshold_
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
@@ -591,8 +613,8 @@ Tth_first <- function(tx, dates, type_output = "doy", threshold = 35, threshold_
 #' @param dates Matrix containing the full range of dates corresponding to "tx" and "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param lat Numeric value indicating the latitude of location.
 #' @param year Vector with years of interest (e.g. 1990:1995)
-# #' @param year.start Day [in "MM-DD" format] defining the beginning of a portion of interest within each year (e.g., the agronomic season).
-# #' @param year.end Day [in "MM-DD" format] defining the end of a portion of interest within each year (e.g., the agronomic season).
+#' @param year.start Day [in "MM-DD" format] defining the beginning of a portion of interest within each year (e.g., the agronomic season).
+#' @param year.end Day [in "MM-DD" format] defining the end of a portion of interest within each year (e.g., the agronomic season).
 #' @param pnan Any year with a percentage of NA data above "pnan" will be ignored
 #' @details Depending on the latitude, the function detects the hemisphere and considers growing season from 1st April to 31st October (northern hemisphere) or from 1st October to 30rd April (southern hemisphere).
 #' @references Jones G, Duff A, Hall A, Myers J (2010) Spatial Analysis of Climate in Winegrape Growing Regions in the Western United States. Am. J. Enol. Vitic. 61:3.
@@ -605,7 +627,7 @@ Tth_first <- function(tx, dates, type_output = "doy", threshold = 35, threshold_
 #' )
 #' @export
 
-GST <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = NULL, pnan = 25) {
+GST <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year.end = NULL, pnan = 25) {
   if (is.null(year)) {
     year <- unique(dates[, 1]) # years of analysis
   }
@@ -614,10 +636,25 @@ GST <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = N
   index <- rep(NA, 1, length(year))
 
   for (iyear in year) {
-    if (!is.null(year.start) & !is.null(year.end)) {
-      ind.year <- year_StartEnd(dates, iyear, year.start = year.start, year.end = year.end) # bounding dates defining the portion of year of interest
-    } else {
-      ind.year <- year_StartEnd(dates, iyear, year.start = NULL, year.end = NULL) # bounding dates defining the year of interest
+    # We define the time interval of interest within the year
+    # If latitude is declared
+    if (!is.null(lat)) {
+      ind.year <- list()
+      if (lat >= 0) { # northern hemisphere (01/04 - 31/10)
+        ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
+        ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 31)
+      } else { # southern hemisphere (01/10/year - 30/04/year+1)
+        ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
+        ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 4 & dates[, 3] == 30)
+      }
+    }
+    # If latitude is null, the time range of year.start and year.end is selected
+    else {
+      if (!is.null(year.start) & !is.null(year.end)) {
+        ind.year <- year_StartEnd(dates, iyear, year.start = year.start, year.end = year.end) # bounding dates defining the portion of year of interest
+      } else {
+        ind.year <- year_StartEnd(dates, iyear, year.start = NULL, year.end = NULL) # bounding dates defining the year of interest
+      }
     }
 
     if (length(ind.year$start) != 0 & length(ind.year$end) != 0) {
@@ -636,16 +673,18 @@ GST <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = N
         # asking for a minimum of pnan (%) of non-missing days
         if (sum(is.na(tx.year)) < 0.01 * pnan * length(tx.year) & sum(is.na(tn.year)) < 0.01 * pnan * length(tn.year)) {
 
-          # Calculate the agroclim index
-          library(agroclim)
-          index[year == iyear] <- agroclim::gst(
-            mx = tx.year,
-            mn = tn.year,
-            dates = dates.date.year,
-            lati = lat
+          # Calculate the index
+          index[year == iyear] <- round(
+            sum(
+              apply(cbind(tx.year, tn.year), 1, function(temps) {
+                max(((temps[1] + temps[2]) / 2) - 10, 0)
+              })
+            )
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
@@ -729,6 +768,8 @@ FD_prob <- function(tn, dates, type_output = "doy", threshold = 0, threshold_pro
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
@@ -808,6 +849,8 @@ Tth_prob <- function(tx, dates, threshold = 20, year = NULL, year.start = NULL, 
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
@@ -888,6 +931,8 @@ EHE <- function(tx, dates, op = "first", year = NULL, year.start = NULL, year.en
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
@@ -901,32 +946,32 @@ EHE <- function(tx, dates, op = "first", year = NULL, year.start = NULL, year.en
 
 
 #########
-## GDD ##
+## GDD_WI ##
 #########
-#' @title Growing Degree Days (GDD)
-#' @description Growing Degree Day (GDD) or Winkler index. Useful as a zoning tool to differentiate between grape varieties and climate (Winkler et al. 1974).
-#' @return Number of Huglin index (per year)
+#' @title Growing Degree Days (GDD_WI)
+#' @description Growing Degree Day (GDD_WI) or Winkler index. Useful as a zoning tool to differentiate between grape varieties and climate (Winkler et al. 1974).
+#' @return The sum of growing-degree-days is returned as a numeric value.
 #' @param tn Vector with daily minimum temperature
 #' @param tx Vector with daily maximum temperature
 #' @param dates Matrix containing the full range of dates corresponding to "tx" and "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param lat Numeric value indicating the latitude of location.
 #' @param year (Optional) Vector with years of interest (e.g. 1990:1995)
-# #' @param year.start (Optional) Day [in "MM-DD" format] defining the beginning of a portion of interest within each year (e.g., the agronomic season).
-# #' @param year.end (Optional) Day [in "MM-DD" format] defining the end of a portion of interest within each year (e.g., the agronomic season).
+#' @param year.start (Optional) Day [in "MM-DD" format] defining the beginning of a portion of interest within each year (e.g., the agronomic season).
+#' @param year.end (Optional) Day [in "MM-DD" format] defining the end of a portion of interest within each year (e.g., the agronomic season).
 #' @param pnan Any year with a percentage of NA data above "pnan" will be ignored
-#' @details Depending on the latitude, the function detects the hemisphere and considers growing season from 1st April to 30rd September (northern hemisphere) or from 1st October to 31st March (southern hemisphere).
-#' @references Huglin P. (1978) Nouveau mode d'evaluation des possibilities heliothermiques d'un milieu viticole. CR Acad Agr 64: 1117–1126
+#' @details Depending on the latitude, the function detects the hemisphere and considers growing season from 1st April to 31rd October (northern hemisphere) or from 1st October to 30st April (southern hemisphere). If the latitude is not declared (lat is null), the time interval defined by year.start and year.end will be taken into account. If none of the three arguments are stated, then the whole year will be considered.
+#' @references Winkler AJ, Cook JA, Kliwer WM, Lider LA (1974) General viticulture. University of California Press, Berkeley, CA
 #' @author JJ. Velasco
 #' @examples
 #'
-#' index <- GDD(tn, tx, dates, lat = 26) # call to the function
-#' index <- GDD(tn, tx, dates,
+#' index <- GDD_WI(tn, tx, dates, lat = 26) # call to the function
+#' index <- GDD_WI(tn, tx, dates,
 #'   lat = 26, # call to the function
 #'   year = 1994:2018
 #' )
 #' @export
 
-GDD <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = NULL, pnan = 25) {
+GDD_WI <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year.end = NULL, pnan = 25) {
   if (is.null(year)) {
     year <- unique(dates[, 1]) # years of analysis
   }
@@ -935,10 +980,25 @@ GDD <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = N
   index <- rep(NA, 1, length(year))
 
   for (iyear in year) {
-    if (!is.null(year.start) & !is.null(year.end)) {
-      ind.year <- year_StartEnd(dates, iyear, year.start = year.start, year.end = year.end) # bounding dates defining the portion of year of interest
-    } else {
-      ind.year <- year_StartEnd(dates, iyear, year.start = NULL, year.end = NULL) # bounding dates defining the year of interest
+    # We define the time interval of interest within the year
+    # If latitude is declared
+    if (!is.null(lat)) {
+      ind.year <- list()
+      if (lat >= 0) { # northern hemisphere (01/04 - 31/10)
+        ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
+        ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 31)
+      } else { # southern hemisphere (01/10/year - 30/04/year+1)
+        ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
+        ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 4 & dates[, 3] == 30)
+      }
+    }
+    # If latitude is null, the time range of year.start and year.end is selected
+    else {
+      if (!is.null(year.start) & !is.null(year.end)) {
+        ind.year <- year_StartEnd(dates, iyear, year.start = year.start, year.end = year.end) # bounding dates defining the portion of year of interest
+      } else {
+        ind.year <- year_StartEnd(dates, iyear, year.start = NULL, year.end = NULL) # bounding dates defining the year of interest
+      }
     }
 
     if (length(ind.year$start) != 0 & length(ind.year$end) != 0) {
@@ -957,24 +1017,24 @@ GDD <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = N
         # asking for a minimum of pnan (%) of non-missing days
         if (sum(is.na(tx.year)) < 0.01 * pnan * length(tx.year) & sum(is.na(tn.year)) < 0.01 * pnan * length(tn.year)) {
 
-          # Calculate the agroclim index
-          library(agroclim)
-          index[year == iyear] <- agroclim::gdd(
-            mx = tx.year,
-            mn = tn.year,
-            dates = dates.date.year,
-            lati = lat,
-            iniday = format(dates.date.year[1], "%m-%d"),
-            endday = format(dates.date.year[length(dates.date.year)], "%m-%d"),
+          # Calculate the index
+          index[year == iyear] <- round(
+            sum(
+              apply(cbind(tx.year, tn.year), 1, function(temps) {
+                max(((temps[1] + temps[2]) / 2) - 10, 0)
+              })
+            )
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
 }
-# index <- GDD(tn, tx, dates, 26) # call to the function
-# index <- GDD(tn, tx, dates, 26, # call to the function
+# index <- GDD_WI(tn, tx, dates, 26) # call to the function
+# index <- GDD_WI(tn, tx, dates, 26, # call to the function
 #   year = 1994:2018
 # )
 
@@ -986,39 +1046,70 @@ GDD <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = N
 #' @title Huglin Heliothermal Index (HI)
 #' @description Huglin Heliothermal Index (HI). Useful as a zoning tool (Huglin 1978).
 #' @return Number of Huglin index (per year)
-#' @param tn Vector with daily minimum temperature
 #' @param tx Vector with daily maximum temperature
+#' @param tm Vector with daily mean temperature
 #' @param dates Matrix containing the full range of dates corresponding to "tx" and "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param lat Numeric value indicating the latitude of location.
 #' @param year (Optional) Vector with years of interest (e.g. 1990:1995)
-# #' @param year.start (Optional) Day [in "MM-DD" format] defining the beginning of a portion of interest within each year (e.g., the agronomic season).
-# #' @param year.end (Optional) Day [in "MM-DD" format] defining the end of a portion of interest within each year (e.g., the agronomic season).
+#' @param year.start (Optional) Day [in "MM-DD" format] defining the beginning of a portion of interest within each year (e.g., the agronomic season).
+#' @param year.end (Optional) Day [in "MM-DD" format] defining the end of a portion of interest within each year (e.g., the agronomic season).
 #' @param pnan Any year with a percentage of NA data above "pnan" will be ignored
-#' @details Depending on the latitude, the function detects the hemisphere and considers growing season from 1st April to 30rd September (northern hemisphere) or from 1st October to 31st March (southern hemisphere).
+#' @details Depending on the latitude, the function detects the hemisphere and considers growing season from 1st April to 30rd September (northern hemisphere) or from 1st October to 31st March (southern hemisphere). The
 #' @references Huglin P. (1978) Nouveau mode d'evaluation des possibilities heliothermiques d'un milieu viticole. CR Acad Agr 64: 1117–1126
 #' @author JJ. Velasco
 #' @examples
 #'
-#' index <- HI(tn, tx, dates, lat = 26) # call to the function
-#' index <- HI(tn, tx, dates,
+#' index <- HI(tx, tm, dates, lat = 26) # call to the function
+#' index <- HI(tx, tm, dates,
 #'   lat = 26, # call to the function
 #'   year = 1994:2018
 #' )
 #' @export
 
-HI <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = NULL, pnan = 25) {
+HI <- function(tx, tm, dates, lat = NULL, year = NULL, year.start = NULL, year.end = NULL, pnan = 25) {
+
+  # K parameter dependent on the latitude of the location;
+  # the sum is multiplied by a factor K depending on the latitude of the location,
+  # taking into account the length of the day
+  if (!is.null(lat)) {
+    if (lat < 40 | lat > 50) {
+      K <- 1
+    } else {
+      int <- approx(40:50, seq(1.02, 1.06, (1.06 - 1.02) / 10), n = 200)
+      K <- int$y[which(abs(int$x - lat) == min(abs(int$x - lat)))]
+    }
+  } else {
+    K <- 1
+  }
+
+  # years of analysis
   if (is.null(year)) {
-    year <- unique(dates[, 1]) # years of analysis
+    year <- unique(dates[, 1])
   }
 
   # initializing output
   index <- rep(NA, 1, length(year))
 
   for (iyear in year) {
-    if (!is.null(year.start) & !is.null(year.end)) {
-      ind.year <- year_StartEnd(dates, iyear, year.start = year.start, year.end = year.end) # bounding dates defining the portion of year of interest
-    } else {
-      ind.year <- year_StartEnd(dates, iyear, year.start = NULL, year.end = NULL) # bounding dates defining the year of interest
+    # We define the time interval of interest within the year
+    # If latitude is declared
+    if (!is.null(lat)) {
+      ind.year <- list()
+      if (lat >= 0) { # northern hemisphere (01/04 - 30/09)
+        ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
+        ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 9 & dates[, 3] == 30)
+      } else { # southern hemisphere (01/10/year - 31/03/year+1)
+        ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
+        ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 3 & dates[, 3] == 31)
+      }
+    }
+    # If latitude is null, the time range of year.start and year.end is selected
+    else {
+      if (!is.null(year.start) & !is.null(year.end)) {
+        ind.year <- year_StartEnd(dates, iyear, year.start = year.start, year.end = year.end) # bounding dates defining the portion of year of interest
+      } else {
+        ind.year <- year_StartEnd(dates, iyear, year.start = NULL, year.end = NULL) # bounding dates defining the year of interest
+      }
     }
 
     if (length(ind.year$start) != 0 & length(ind.year$end) != 0) {
@@ -1026,7 +1117,7 @@ HI <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = NU
 
         # Select the corresponding data range
         tx.year <- tx[ind.year$start:ind.year$end]
-        tn.year <- tn[ind.year$start:ind.year$end]
+        tm.year <- tm[ind.year$start:ind.year$end]
 
         # Select the corresponding date range
         dates.matrix.year <- dates[ind.year$start:ind.year$end, ]
@@ -1035,24 +1126,27 @@ HI <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = NU
         )
 
         # asking for a minimum of pnan (%) of non-missing days
-        if (sum(is.na(tx.year)) < 0.01 * pnan * length(tx.year) & sum(is.na(tn.year)) < 0.01 * pnan * length(tn.year)) {
+        if (sum(is.na(tx.year)) < 0.01 * pnan * length(tx.year) &
+          sum(is.na(tm.year)) < 0.01 * pnan * length(tm.year)) {
 
-          # Calculate the agroclim index
-          library(agroclim)
-          index[year == iyear] <- agroclim::hi(
-            mx = tx.year,
-            mn = tn.year,
-            dates = dates.date.year,
-            lati = lat
+          # Calculate the index
+          index[year == iyear] <- round(
+            sum(
+              apply(cbind(tm.year, tx.year), 1, function(temps, K) {
+                max(((temps[1] - 10) + (temps[2] - 10)) / 2, 0) * K
+              }, K)
+            )
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
 }
-# index = HI(tn, tx, dates, 26)  # call to the function
-# index = HI(tn, tx, dates, 26,  # call to the function
+# index = HI(tx, tm, dates, 26)  # call to the function
+# index = HI(tx, tm, dates, 26,  # call to the function
 #            year = 1994:2018
 # )
 
@@ -1068,10 +1162,10 @@ HI <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = NU
 #' @param dates Matrix containing the full range of dates corresponding to "tx" and "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param lat Numeric value indicating the latitude of location.
 #' @param year (Optional) Vector with years of interest (e.g. 1990:1995)
-# #' @param year.start (Optional) Day [in "MM-DD" format] defining the beginning of a portion of interest within each year (e.g., the agronomic season).
-# #' @param year.end (Optional) Day [in "MM-DD" format] defining the end of a portion of interest within each year (e.g., the agronomic season).
+#' @param year.start (Optional) Day [in "MM-DD" format] defining the beginning of a portion of interest within each year (e.g., the agronomic season).
+#' @param year.end (Optional) Day [in "MM-DD" format] defining the end of a portion of interest within each year (e.g., the agronomic season).
 #' @param pnan Any year with a percentage of NA data above "pnan" will be ignored
-#' @details Depending on the latitude, the function detects the hemisphere and considers growing season from 1st April to 30rd September (northern hemisphere) or from 1st October to 31st March (southern hemisphere).
+#' @details Depending on the latitude, the function detects the hemisphere and considers growing season from 1st April to 31rd October (northern hemisphere) or from 1st October to 30st April (southern hemisphere).
 #' @references Gladstones, J. (1992) Viticulture and environment (Winetitles: Adelaide).
 #' @author JJ. Velasco
 #' @examples
@@ -1083,19 +1177,49 @@ HI <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = NU
 #' )
 #' @export
 
-BEDD <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = NULL, pnan = 25) {
+BEDD <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year.end = NULL, pnan = 25) {
+  # K parameter dependent on the latitude of the location;
+  # the sum is multiplied by a factor K depending on the latitude of the location,
+  # taking into account the length of the day
+  if (!is.null(lat)) {
+    if (lat < 40 | lat > 50) {
+      K <- 1
+    } else {
+      int <- approx(40:50, seq(1.0, 1.045, (1.045 - 1.0) / 10), n = 200)
+      K <- int$y[which(abs(int$x - lat) == min(abs(int$x - lat)))]
+    }
+  } else {
+    K <- 1
+  }
+
+  # years of analysis
   if (is.null(year)) {
-    year <- unique(dates[, 1]) # years of analysis
+    year <- unique(dates[, 1])
   }
 
   # initializing output
   index <- rep(NA, 1, length(year))
 
   for (iyear in year) {
-    if (!is.null(year.start) & !is.null(year.end)) {
-      ind.year <- year_StartEnd(dates, iyear, year.start = year.start, year.end = year.end) # bounding dates defining the portion of year of interest
-    } else {
-      ind.year <- year_StartEnd(dates, iyear, year.start = NULL, year.end = NULL) # bounding dates defining the year of interest
+    # We define the time interval of interest within the year
+    # If latitude is declared
+    if (!is.null(lat)) {
+      ind.year <- list()
+      if (lat >= 0) { # northern hemisphere (01/04 - 31/10)
+        ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
+        ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 31)
+      } else { # southern hemisphere (01/10/year - 30/04/year+1)
+        ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
+        ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 4 & dates[, 3] == 30)
+      }
+    }
+    # If latitude is null, the time range of year.start and year.end is selected
+    else {
+      if (!is.null(year.start) & !is.null(year.end)) {
+        ind.year <- year_StartEnd(dates, iyear, year.start = year.start, year.end = year.end) # bounding dates defining the portion of year of interest
+      } else {
+        ind.year <- year_StartEnd(dates, iyear, year.start = NULL, year.end = NULL) # bounding dates defining the year of interest
+      }
     }
 
     if (length(ind.year$start) != 0 & length(ind.year$end) != 0) {
@@ -1112,18 +1236,28 @@ BEDD <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = 
         )
 
         # asking for a minimum of pnan (%) of non-missing days
-        if (sum(is.na(tx.year)) < 0.01 * pnan * length(tx.year) & sum(is.na(tn.year)) < 0.01 * pnan * length(tn.year)) {
+        if (sum(is.na(tx.year)) < 0.01 * pnan * length(tx.year) &
+          sum(is.na(tn.year)) < 0.01 * pnan * length(tn.year)) {
 
-          # Calculate the agroclim index
-          library(agroclim)
-          index[year == iyear] <- agroclim::bedd(
-            mx = tx.year,
-            mn = tn.year,
-            dates = dates.date.year,
-            lati = lat
+          # Calculate the index
+          index[year == iyear] <- round(
+            sum(
+              apply(cbind(tx.year, tn.year, tx.year - tn.year), 1, function(temps, K) {
+                if (temps[3] > 13) {
+                  dtr_adj <- 0.25 * (temps[3] - 13)
+                } else if (temps[3] >= 10 & temps[3] <= 13) {
+                  dtr_adj <- 0
+                } else if (temps[3] < 10) {
+                  dtr_adj <- 0.25 * (temps[3] - 10)
+                }
+                min(((max(((temps[1] + temps[2]) / 2) - 10, 0) * K) + dtr_adj), 9)
+              }, K)
+            )
           )
         }
       }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
     }
   }
   return(index)
@@ -1132,3 +1266,124 @@ BEDD <- function(tn, tx, dates, lat, year = NULL, year.start = NULL, year.end = 
 # index = BEDD(tn, tx, dates, 26,  # call to the function
 #            year = 1994:2018
 # )
+
+
+
+##########
+## BBLI ##
+##########
+#' @title Branas, Bernon and Levandoux index (BBLI)
+#' @description Branas, Bernon and Levandoux index (BBLI, Branas et al 1946)
+#' @return Number of Branas, Bernon and Levandoux index (per year)
+#' @param tm Vector with daily mean temperature
+#' @param pr Vector with daily precipitation
+#' @param dates Matrix containing the full range of dates corresponding to "tm" and "pr" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
+#' @param lat Numeric value indicating the latitude of location.
+#' @param year (Optional) Vector with years of interest (e.g. 1990:1995)
+#' @param year.start (Optional) Day [in "MM-DD" format] defining the beginning of a portion of interest within each year (e.g., the agronomic season).
+#' @param year.end (Optional) Day [in "MM-DD" format] defining the end of a portion of interest within each year (e.g., the agronomic season).
+#' @param pnan Any year with a percentage of NA data above "pnan" will be ignored
+#' @details The BBLI takes into account  the influence  of  mean temperature  and
+#' precipitation  on  grape yield  and  wine  quality. This  index  is  the  sum
+#' of  the products of monthly mean temperature (tm, in Celsius) and monthly
+#' accumulated  precipitation  amount  (pr, in mm) during the 1st April to
+#' 31st August season (Northern Hemisphere) or 1st October to 28st February (Southern Hemisphere).
+#'
+#' Depending on the latitude, the function detects the hemisphere and considers growing season
+#' from 1st April to 31rd October (northern hemisphere) or
+#' from 1st October to 30st April (southern hemisphere).
+#'
+#' @references Branas J, Bernon G, Levadoux L. 1946. Elements de Viticulture Generale. Imp. Dehan, Bordeaux
+#' @author JJ. Velasco
+#' @examples
+#'
+#' index <- BBLI(tm, pr, dates, lat = 26) # call to the function
+#' index <- BBLI(tm, pr, dates,
+#'   lat = 26, # call to the function
+#'   year = 1994:2018
+#' )
+#' @export
+
+BBLI <- function(tm, pr, dates, lat = NULL, year = NULL, year.start = NULL, year.end = NULL, pnan = 25) {
+
+  # years of analysis
+  if (is.null(year)) {
+    year <- unique(dates[, 1])
+  }
+
+  # initializing output
+  index <- rep(NA, 1, length(year))
+
+  for (iyear in year) {
+    # We define the time interval of interest within the year
+    # If latitude is declared
+    if (!is.null(lat)) {
+      ind.year <- list()
+      if (lat >= 0) { # northern hemisphere (01/04 - 31/08)
+        ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
+        ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 08 & dates[, 3] == 31)
+      } else { # southern hemisphere (01/10/year - 28/02/year+1)
+        ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
+        ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 2 & dates[, 3] == 28)
+      }
+    }
+    # If latitude is null, the time range of year.start and year.end is selected
+    else {
+      if (!is.null(year.start) & !is.null(year.end)) {
+        ind.year <- year_StartEnd(dates, iyear, year.start = year.start, year.end = year.end) # bounding dates defining the portion of year of interest
+      } else {
+        ind.year <- year_StartEnd(dates, iyear, year.start = NULL, year.end = NULL) # bounding dates defining the year of interest
+      }
+    }
+
+    if (length(ind.year$start) != 0 & length(ind.year$end) != 0) {
+      if (!is.na(ind.year$start) & !is.na(ind.year$end)) {
+
+        # Select the corresponding data range
+        tm.year <- tm[ind.year$start:ind.year$end]
+        pr.year <- pr[ind.year$start:ind.year$end]
+
+        # Select the corresponding date range
+        dates.matrix.year <- dates[ind.year$start:ind.year$end, ]
+
+        # Asking for a minimum of pnan (%) of non-missing days
+        if (sum(is.na(tm.year)) < 0.01 * pnan * length(tm.year) &
+          sum(is.na(pr.year)) < 0.01 * pnan * length(pr.year)) {
+
+          # Data is written to a dataframe
+          df.year <- data.frame(
+            Year = dates.matrix.year[, 1],
+            Month = dates.matrix.year[, 2],
+            pr_y = pr.year,
+            tm_y = tm.year
+          )
+
+          # Group by month and year
+          df_month.year <- df.year %>%
+            group_by(Year, Month) %>%
+            summarise(
+              pr_m = sum(pr_y),
+              tm_m = mean(tm_y), .groups = "drop"
+            ) %>%
+            mutate(TxP_m = pr_m * tm_m)
+
+          # Calculate the index
+          index[year == iyear] <- round(
+            sum(df_month.year[["TxP_m"]])
+          )
+          
+          # Eliminate the dataframes from memory
+          rm(df.year)
+          rm(df_month.year)
+        }
+      }
+    } else {
+      message(sprintf("... The dates necessary for the calculation of the year %d have not been found. \nNA value is returned for that year...", iyear))
+    }
+  }
+  return(index)
+}
+# index <- BBLI(tm, pr, dates, lat = 26) # call to the function
+# index <- BBLI(tm, pr, dates,
+#   lat = 26, # call to the function
+#   year = 1994:2018

@@ -35,10 +35,11 @@ FD_first;Mean_first_frost_day;agroindex_agroclim;1;0;0;0;0;days;Agroclim:First_f
 FD_last;Mean_last_frost_day;agroindex_agroclim;1;0;0;0;0;days;Agroclim:Last_frost_day_of_the_year
 FD_num;Number_of_frost_days;agroindex_agroclim;1;0;0;0;0;days;Agroclim:Number_of_frost_day_of_the_year
 Tth_first;First_day_in_the_year_where_P(tmax>threshold)>=prob;agroindex_agroclim;0;1;0;0;0;days;Agroclim:Day_when_P(tmax>threshold)>=prob
-GST;Growing_Season_Temperature;agroindex_agroclim;1;1;0;0;0;degC;Agroclim:Mean_daily_temperature_in_growing_season.
+GST;Growing_Season_Temperature;agroindex_agroclim;1;1;0;0;0;degC;Mean_daily_temperature_in_growing_season.
 FD_prob;First_day_in_the_year_where_P(tmin<threshold)<=prob;agroindex_agroclim;1;0;0;0;0;days;Agroclim:Day_when_P(tmin<threshold)<=prob
 Tth_prob;Probability_of_exceed_a_predefined_temperature_value;agroindex_agroclim;0;1;0;0;0;;Agroclim:Probability_of_exceed_a_predefined_temperature_value
 EHE;Extreme_Heat_Exposure;agroindex_agroclim;0;1;0;0;0;;Agroclim:Extreme_Heat_Exposure_index_as_a_zoning_tool
-GDD;Growing Degree Day;agroindex_agroclim;1;1;0;0;0;;Agroclim:Winkler_index_as_a_zoning_tool
-HI;Huglin_Heliothermal_Index;agroindex_agroclim;1;1;0;0;0;;Agroclim:Huglin_heliothermal_index_as_a_zoning_tool
-BEDD;Biologically_effective_degree-days;agroindex_agroclim;1;1;0;0;0;;Agroclim:Biologically_effective_degree-day
+GDD_WI;Growing_Degree_Day;agroindex_agroclim;1;1;0;0;0;;Winkler_index_as_a_zoning_tool
+HI;Huglin_Heliothermal_Index;agroindex_agroclim;0;1;1;0;0;;Huglin_heliothermal_index_as_a_zoning_tool
+BEDD;Biologically_effective_degree-days;agroindex_agroclim;1;1;0;0;0;;Biologically_effective_degree-day
+BBLI;Branas_Bernon_Levandoux_index;agroindex_agroclim;0;0;1;1;0;;Branas_Bernon_Levandoux_index_as_a_zoning_tool

@@ -88,7 +88,7 @@ indexGrid <- function(tn = NULL,
     "avrn_agsn", "dc_rnlg_agsn", "tm_agsn", "dc_txh_agsn", "dc_tnh_agsn",
     "gsl", "avg", "nd_thre", "nhw", "dr", "prcptot", "nrd", "lds", "sdii", "prcptot_thre", "ns",
     "TM_cold", "TM_warm", "FD_first", "FD_last", "FD_num", "Tth_first", "GST", "FD_prob", "Tth_prob", 
-    "EHE", "GDD", "HI", "BEDD"
+    "EHE", "GDD_WI", "HI", "BEDD", "BBLI"
   )
   # Check if the index code is valid, otherwise throw an error message
   if (!index.code %in% choices) stop("Non valid index selected: Use indexShow() to select an index.")
