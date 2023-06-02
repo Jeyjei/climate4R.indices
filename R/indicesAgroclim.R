@@ -48,7 +48,7 @@ agroindex_agroclim <- function(index.code, ...) {
   # Remove "lat" argument when index.code is not in c("GDD_WI", "GST", "HI", "BEDD", "BBLI")
   input.arg.list <- list(...)
   if (!index.code %in% c("GDD_WI", "GST", "HI", "BEDD", "BBLI")) input.arg.list$lat <- NULL
-
+  
   # Apply the atomic function
   do.call(index.code, input.arg.list)
 }
@@ -643,9 +643,25 @@ GST <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year.
       if (lat >= 0) { # northern hemisphere (01/04 - 31/10)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 31)
+        # If the exact dates are not found, the first available date of the start month 
+        # and the last existing date of the end month are chosen
+        if (length(ind.year$start) == 0) {
+          ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 4))
+        }
+        if (length(ind.year$end) == 0) {
+          ind.year$end <- max(which(dates[, 1] == iyear & dates[, 2] == 10))
+        }
       } else { # southern hemisphere (01/10/year - 30/04/year+1)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 4 & dates[, 3] == 30)
+        # If the exact dates are not found, the first available date of the start month 
+        # and the last existing date of the end month are chosen
+        if (length(ind.year$start) == 0) {
+          ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 10))
+        }
+        if (length(ind.year$end) == 0) {
+          ind.year$end <- max(which(dates[, 1] == iyear + 1 & dates[, 2] == 4))
+        }
       }
     }
     # If latitude is null, the time range of year.start and year.end is selected
@@ -972,6 +988,7 @@ EHE <- function(tx, dates, op = "first", year = NULL, year.start = NULL, year.en
 #' @export
 
 GDD_WI <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year.end = NULL, pnan = 25) {
+  
   if (is.null(year)) {
     year <- unique(dates[, 1]) # years of analysis
   }
@@ -987,9 +1004,25 @@ GDD_WI <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, ye
       if (lat >= 0) { # northern hemisphere (01/04 - 31/10)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 31)
+        # If the exact dates are not found, the first available date of the start month 
+        # and the last existing date of the end month are chosen
+        if (length(ind.year$start) == 0) {
+          ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 4))
+        }
+        if (length(ind.year$end) == 0) {
+          ind.year$end <- max(which(dates[, 1] == iyear & dates[, 2] == 10))
+        }
       } else { # southern hemisphere (01/10/year - 30/04/year+1)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 4 & dates[, 3] == 30)
+        # If the exact dates are not found, the first available date of the start month 
+        # and the last existing date of the end month are chosen
+        if (length(ind.year$start) == 0) {
+          ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 10))
+        }
+        if (length(ind.year$end) == 0) {
+          ind.year$end <- max(which(dates[, 1] == iyear + 1 & dates[, 2] == 4))
+        }
       }
     }
     # If latitude is null, the time range of year.start and year.end is selected
@@ -1098,9 +1131,25 @@ HI <- function(tx, tm, dates, lat = NULL, year = NULL, year.start = NULL, year.e
       if (lat >= 0) { # northern hemisphere (01/04 - 30/09)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 9 & dates[, 3] == 30)
+        # If the exact dates are not found, the first available date of the start month 
+        # and the last existing date of the end month are chosen
+        if (length(ind.year$start) == 0) {
+          ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 4))
+        }
+        if (length(ind.year$end) == 0) {
+          ind.year$end <- max(which(dates[, 1] == iyear & dates[, 2] == 9))
+        }
       } else { # southern hemisphere (01/10/year - 31/03/year+1)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 3 & dates[, 3] == 31)
+        # If the exact dates are not found, the first available date of the start month 
+        # and the last existing date of the end month are chosen
+        if (length(ind.year$start) == 0) {
+          ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 10))
+        }
+        if (length(ind.year$end) == 0) {
+          ind.year$end <- max(which(dates[, 1] == iyear+1 & dates[, 2] == 3))
+        }
       }
     }
     # If latitude is null, the time range of year.start and year.end is selected
@@ -1208,9 +1257,25 @@ BEDD <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year
       if (lat >= 0) { # northern hemisphere (01/04 - 31/10)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 31)
+        # If the exact dates are not found, the first available date of the start month 
+        # and the last existing date of the end month are chosen
+        if (length(ind.year$start) == 0) {
+          ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 4))
+        }
+        if (length(ind.year$end) == 0) {
+          ind.year$end <- max(which(dates[, 1] == iyear & dates[, 2] == 10))
+        }
       } else { # southern hemisphere (01/10/year - 30/04/year+1)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 4 & dates[, 3] == 30)
+        # If the exact dates are not found, the first available date of the start month 
+        # and the last existing date of the end month are chosen
+        if (length(ind.year$start) == 0) {
+          ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 10))
+        }
+        if (length(ind.year$end) == 0) {
+          ind.year$end <- max(which(dates[, 1] == iyear & dates[, 2] == 4))
+        }
       }
     }
     # If latitude is null, the time range of year.start and year.end is selected
@@ -1321,10 +1386,26 @@ BBLI <- function(tm, pr, dates, lat = NULL, year = NULL, year.start = NULL, year
       ind.year <- list()
       if (lat >= 0) { # northern hemisphere (01/04 - 31/08)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
-        ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 08 & dates[, 3] == 31)
+        ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 8 & dates[, 3] == 31)
+        # If the exact dates are not found, the first available date of the start month 
+        # and the last existing date of the end month are chosen
+        if (length(ind.year$start) == 0) {
+          ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 4))
+        }
+        if (length(ind.year$end) == 0) {
+          ind.year$end <- max(which(dates[, 1] == iyear & dates[, 2] == 8))
+        }
       } else { # southern hemisphere (01/10/year - 28/02/year+1)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 2 & dates[, 3] == 28)
+        # If the exact dates are not found, the first available date of the start month 
+        # and the last existing date of the end month are chosen
+        if (length(ind.year$start) == 0) {
+          ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 10))
+        }
+        if (length(ind.year$end) == 0) {
+          ind.year$end <- max(which(dates[, 1] == iyear+1 & dates[, 2] == 2))
+        }
       }
     }
     # If latitude is null, the time range of year.start and year.end is selected
