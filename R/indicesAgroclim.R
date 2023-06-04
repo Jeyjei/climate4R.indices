@@ -37,8 +37,7 @@
 #' @export
 
 agroindex_agroclim <- function(index.code, ...) {
-
-    choices <- c(
+  choices <- c(
     "TM_cold", "TM_warm", "FD_first", "FD_last", "FD_num",
     "Tth_first", "GST", "FD_prob", "Tth_prob", "EHE",
     "GDD_WI", "HI", "BEDD", "BBLI"
@@ -48,7 +47,7 @@ agroindex_agroclim <- function(index.code, ...) {
   # Remove "lat" argument when index.code is not in c("GDD_WI", "GST", "HI", "BEDD", "BBLI")
   input.arg.list <- list(...)
   if (!index.code %in% c("GDD_WI", "GST", "HI", "BEDD", "BBLI")) input.arg.list$lat <- NULL
-  
+
   # Apply the atomic function
   do.call(index.code, input.arg.list)
 }
@@ -70,7 +69,6 @@ agroindex_agroclim <- function(index.code, ...) {
 #' @export
 
 year_StartEnd <- function(dates, year, year.start = NULL, year.end = NULL) {
-   
   if (!is.null(year.start) & !is.null(year.end)) {
     # Add year to year.start and year.end
     year.start.c <- paste(as.character(year), year.start, sep = "-")
@@ -643,7 +641,7 @@ GST <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year.
       if (lat >= 0) { # northern hemisphere (01/04 - 31/10)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 31)
-        # If the exact dates are not found, the first available date of the start month 
+        # If the exact dates are not found, the first available date of the start month
         # and the last existing date of the end month are chosen
         if (length(ind.year$start) == 0) {
           ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 4))
@@ -654,7 +652,7 @@ GST <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year.
       } else { # southern hemisphere (01/10/year - 30/04/year+1)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 4 & dates[, 3] == 30)
-        # If the exact dates are not found, the first available date of the start month 
+        # If the exact dates are not found, the first available date of the start month
         # and the last existing date of the end month are chosen
         if (length(ind.year$start) == 0) {
           ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 10))
@@ -988,7 +986,6 @@ EHE <- function(tx, dates, op = "first", year = NULL, year.start = NULL, year.en
 #' @export
 
 GDD_WI <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year.end = NULL, pnan = 25) {
-  
   if (is.null(year)) {
     year <- unique(dates[, 1]) # years of analysis
   }
@@ -1004,7 +1001,7 @@ GDD_WI <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, ye
       if (lat >= 0) { # northern hemisphere (01/04 - 31/10)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 31)
-        # If the exact dates are not found, the first available date of the start month 
+        # If the exact dates are not found, the first available date of the start month
         # and the last existing date of the end month are chosen
         if (length(ind.year$start) == 0) {
           ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 4))
@@ -1015,7 +1012,7 @@ GDD_WI <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, ye
       } else { # southern hemisphere (01/10/year - 30/04/year+1)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 4 & dates[, 3] == 30)
-        # If the exact dates are not found, the first available date of the start month 
+        # If the exact dates are not found, the first available date of the start month
         # and the last existing date of the end month are chosen
         if (length(ind.year$start) == 0) {
           ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 10))
@@ -1051,13 +1048,12 @@ GDD_WI <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, ye
         if (sum(is.na(tx.year)) < 0.01 * pnan * length(tx.year) & sum(is.na(tn.year)) < 0.01 * pnan * length(tn.year)) {
 
           # Calculate the index
-          index[year == iyear] <- round(
+          index[year == iyear] <-
             sum(
               apply(cbind(tx.year, tn.year), 1, function(temps) {
                 max(((temps[1] + temps[2]) / 2) - 10, 0)
               })
             )
-          )
         }
       }
     } else {
@@ -1131,7 +1127,7 @@ HI <- function(tx, tm, dates, lat = NULL, year = NULL, year.start = NULL, year.e
       if (lat >= 0) { # northern hemisphere (01/04 - 30/09)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 9 & dates[, 3] == 30)
-        # If the exact dates are not found, the first available date of the start month 
+        # If the exact dates are not found, the first available date of the start month
         # and the last existing date of the end month are chosen
         if (length(ind.year$start) == 0) {
           ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 4))
@@ -1142,13 +1138,13 @@ HI <- function(tx, tm, dates, lat = NULL, year = NULL, year.start = NULL, year.e
       } else { # southern hemisphere (01/10/year - 31/03/year+1)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 3 & dates[, 3] == 31)
-        # If the exact dates are not found, the first available date of the start month 
+        # If the exact dates are not found, the first available date of the start month
         # and the last existing date of the end month are chosen
         if (length(ind.year$start) == 0) {
           ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 10))
         }
         if (length(ind.year$end) == 0) {
-          ind.year$end <- max(which(dates[, 1] == iyear+1 & dates[, 2] == 3))
+          ind.year$end <- max(which(dates[, 1] == iyear + 1 & dates[, 2] == 3))
         }
       }
     }
@@ -1179,13 +1175,12 @@ HI <- function(tx, tm, dates, lat = NULL, year = NULL, year.start = NULL, year.e
           sum(is.na(tm.year)) < 0.01 * pnan * length(tm.year)) {
 
           # Calculate the index
-          index[year == iyear] <- round(
-            sum(
-              apply(cbind(tm.year, tx.year), 1, function(temps, K) {
-                max(((temps[1] - 10) + (temps[2] - 10)) / 2, 0) * K
-              }, K)
+          index[year == iyear] <-
+            K * sum(
+              apply(cbind(tm.year, tx.year), 1, function(temps) {
+                max(((temps[1] - 10) + (temps[2] - 10)) / 2, 0)
+              })
             )
-          )
         }
       }
     } else {
@@ -1257,7 +1252,7 @@ BEDD <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year
       if (lat >= 0) { # northern hemisphere (01/04 - 31/10)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 31)
-        # If the exact dates are not found, the first available date of the start month 
+        # If the exact dates are not found, the first available date of the start month
         # and the last existing date of the end month are chosen
         if (length(ind.year$start) == 0) {
           ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 4))
@@ -1268,7 +1263,7 @@ BEDD <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year
       } else { # southern hemisphere (01/10/year - 30/04/year+1)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 4 & dates[, 3] == 30)
-        # If the exact dates are not found, the first available date of the start month 
+        # If the exact dates are not found, the first available date of the start month
         # and the last existing date of the end month are chosen
         if (length(ind.year$start) == 0) {
           ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 10))
@@ -1305,7 +1300,7 @@ BEDD <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year
           sum(is.na(tn.year)) < 0.01 * pnan * length(tn.year)) {
 
           # Calculate the index
-          index[year == iyear] <- round(
+          index[year == iyear] <-
             sum(
               apply(cbind(tx.year, tn.year, tx.year - tn.year), 1, function(temps, K) {
                 if (temps[3] > 13) {
@@ -1318,7 +1313,6 @@ BEDD <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year
                 min(((max(((temps[1] + temps[2]) / 2) - 10, 0) * K) + dtr_adj), 9)
               }, K)
             )
-          )
         }
       }
     } else {
@@ -1387,7 +1381,7 @@ BBLI <- function(tm, pr, dates, lat = NULL, year = NULL, year.start = NULL, year
       if (lat >= 0) { # northern hemisphere (01/04 - 31/08)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 4 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear & dates[, 2] == 8 & dates[, 3] == 31)
-        # If the exact dates are not found, the first available date of the start month 
+        # If the exact dates are not found, the first available date of the start month
         # and the last existing date of the end month are chosen
         if (length(ind.year$start) == 0) {
           ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 4))
@@ -1398,13 +1392,13 @@ BBLI <- function(tm, pr, dates, lat = NULL, year = NULL, year.start = NULL, year
       } else { # southern hemisphere (01/10/year - 28/02/year+1)
         ind.year$start <- which(dates[, 1] == iyear & dates[, 2] == 10 & dates[, 3] == 1)
         ind.year$end <- which(dates[, 1] == iyear + 1 & dates[, 2] == 2 & dates[, 3] == 28)
-        # If the exact dates are not found, the first available date of the start month 
+        # If the exact dates are not found, the first available date of the start month
         # and the last existing date of the end month are chosen
         if (length(ind.year$start) == 0) {
           ind.year$start <- min(which(dates[, 1] == iyear & dates[, 2] == 10))
         }
         if (length(ind.year$end) == 0) {
-          ind.year$end <- max(which(dates[, 1] == iyear+1 & dates[, 2] == 2))
+          ind.year$end <- max(which(dates[, 1] == iyear + 1 & dates[, 2] == 2))
         }
       }
     }
@@ -1449,10 +1443,9 @@ BBLI <- function(tm, pr, dates, lat = NULL, year = NULL, year.start = NULL, year
             mutate(TxP_m = pr_m * tm_m)
 
           # Calculate the index
-          index[year == iyear] <- round(
-            sum(df_month.year[["TxP_m"]])
-          )
-          
+          index[year == iyear] <- sum(df_month.year[["TxP_m"]])
+
+
           # Eliminate the dataframes from memory
           rm(df.year)
           rm(df_month.year)
