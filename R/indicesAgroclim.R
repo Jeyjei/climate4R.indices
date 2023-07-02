@@ -188,7 +188,7 @@ TM_cold <- function(tn, dates, type_output = "temp", year = NULL, year.start = N
 #' @title Warmest month of the year.
 #' @description Calculates the mean temperature of the warmest month of the year.
 #' @return Depending on argument type, the output will be a numeric value with the month (type_output = "month") or with temperature (type_output = "temp") per year.
-#' @param tx Vector with daily maximum temperature.
+#' @param tx Vector with daily maximum temperature. 
 #' @param dates Matrix containing the full range of dates corresponding to "tx" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param type_output Type of output. It can be "temp" for temperature or "month" for the number of the warmest month. The default value is "temp".
 #' @param year (Optional) Vector with years of interest (e.g. 1990:1995).
@@ -269,7 +269,7 @@ TM_warm <- function(tx, dates, type_output = "temp", year = NULL, year.start = N
 #' @title Mean first frost day.
 #' @description Calculates the first frost day of each year.
 #' @return Depending on argument type_output, the output will be a numeric vector of julian days (type_output = "doy") or a vector of characters with dates (type_output = "date").
-#' @param tn Vector with daily minimum temperature.
+#' @param tn Vector with daily minimum temperature. It is recommended that the units be degrees Celsius (ºC). Otherwise, modify the "threshold".
 #' @param dates Matrix containing the full range of dates corresponding to "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param type_output Type of output. It can be "doy" for day of the year (julian day) or "date" for data format ("dd-mm"). The default value is "doy".
 #' @param threshold Temperature threshold considered to trigger frost occurrence. The default value is 0 (ºC).
@@ -353,7 +353,7 @@ FD_first <- function(tn, dates, type_output = "doy", threshold = 0, year = NULL,
 #' @title Mean last frost day.
 #' @description Calculates the last frost day of each year.
 #' @return Depending on argument type_output, the output will be a numeric vector of julian days (type_output = "doy") or a vector of characters with dates (type_output = "date").
-#' @param tn Vector of daily minimum temperature.
+#' @param tn Vector of daily minimum temperature. It is recommended that the units be degrees Celsius (ºC). Otherwise, modify the threshold.
 #' @param dates Matrix containing the full range of dates corresponding to "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param type_output Type of output. It can be "doy" for day of the year (julian day) or "date" for data format ("dd-mm"). The default value is "doy".
 #' @param threshold Temperature threshold considered to trigger frost occurrence. The default value is 0 (ºC).
@@ -432,12 +432,12 @@ FD_last <- function(tn, dates, type_output = "doy", threshold = 0, year = NULL, 
 
 
 ##############
-## FD_num ##
+### FD_num ###
 ##############
 #' @title Number of frost days.
 #' @description Calculates the number of frost days of each year.
 #' @return A numeric vector with the annual number of frost days is returned.
-#' @param tn Vector with daily minimum temperature.
+#' @param tn Vector with daily minimum temperature. It is recommended that the units be degrees Celsius (ºC). Otherwise, modify the "threshold".
 #' @param dates Matrix containing the full range of dates corresponding to "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param threshold Temperature threshold considered to trigger frost occurrence. The default value is 0 (ºC).
 #' @param year (Optional) Vector with years of interest (e.g. 1990:1995).
@@ -520,7 +520,7 @@ FD_num <- function(tn, dates, threshold = 0, year = NULL, year.start = NULL, yea
 #' @title First day in the year where P(tmax>threshold) >= threshold_prob
 #' @description Calculates the first day in the year where the probability of temperature over a threshold is higher than a predefined threshold.
 #' @return Depending on argument type_output, the output will be a numeric vector of julian days (type_output = "doy") or a vector of characters with dates (type_output = "date").
-#' @param tx Vector with daily maximum temperature.
+#' @param tx Vector with daily maximum temperature. It is recommended that the units be degrees Celsius (ºC). Otherwise, modify the "threshold".
 #' @param dates Matrix containing the full range of dates corresponding to "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param type_output Type of output. It can be "doy" for day of the year (julian day) or "date" for data format ("dd-mm"). The default value is "doy".
 #' @param threshold Temperature threshold considered to trigger occurrence. The default value is 35 (ºC).
@@ -606,8 +606,8 @@ Tth_first <- function(tx, dates, type_output = "doy", threshold = 35, threshold_
 #' @title Growing Season Temperature (GST)
 #' @description Growing Season Temperature (GST). Mean daily temperature in growing season.
 #' @return A numeric vector with annual values is returned.
-#' @param tn Vector with daily minimum temperature
-#' @param tx Vector with daily maximum temperature
+#' @param tn Vector with daily minimum temperature. The units need to be degrees Celsius (ºC).
+#' @param tx Vector with daily maximum temperature. The units need to be degrees Celsius (ºC).
 #' @param dates Matrix containing the full range of dates corresponding to "tx" and "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param lat Numeric value indicating the latitude of location.
 #' @param year Vector with years of interest (e.g. 1990:1995)
@@ -716,7 +716,7 @@ GST <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year.
 #' @title First day in the year where P(tmin<threshold) <= threshold_prob
 #' @description Calculates the first day in the year where the probability of temperature below a threshold is below than a predefined threshold.
 #' @return Depending on argument type_output, the output will be a numeric vector of julian days (type_output = "doy") or a vector of characters with dates (type_output = "date").
-#' @param tn Vector with daily minimum temperature.
+#' @param tn Vector with daily minimum temperature. Vector with daily maximum temperature. It is recommended that the units be degrees Celsius (ºC). Otherwise, modify the "threshold".
 #' @param dates Matrix containing the full range of dates corresponding to "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param type_output Type of output. It can be "doy" for day of the year (julian day) or "date" for data format ("dd-mm"). The default value is "doy".
 #' @param threshold Temperature threshold considered to trigger frost occurrence. The default value is 0 (ºC).
@@ -802,7 +802,7 @@ FD_prob <- function(tn, dates, type_output = "doy", threshold = 0, threshold_pro
 #' @title Probability of exceed a predefined temperature value.
 #' @description Calculates the probability of exceed a predefined temperature value.
 #' @return A numeric vector with annual values is returned.
-#' @param tx Vector with daily (usually maximum) temperature.
+#' @param tx Vector with daily (usually maximum) temperature. Vector with daily maximum temperature. It is recommended that the units be degrees Celsius (ºC). Otherwise, modify the "threshold".
 #' @param dates Matrix containing the full range of dates corresponding to "tx" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param threshold Temperature threshold considered to trigger occurrence. The default value is 20 (ºC).
 #' @param year (Optional) Vector with years of interest (e.g. 1990:1995).
@@ -884,7 +884,7 @@ Tth_prob <- function(tx, dates, threshold = 20, year = NULL, year.start = NULL, 
 #' @title Extreme Heat Exposure (EHE)
 #' @description Extreme Heat Exposure (EHE). Useful for climatic risks assessement on wheat and barley.
 #' @return If op = "first", the function returns the first day (date format) when the first event is triggered. If op =='doy', julian day is returned. If op = "number", the funciton returns the number of events occurred in the year.
-#' @param tx Vector with daily (usually maximum) temperature.
+#' @param tx Vector with daily (usually maximum) temperature. The units need to be degrees Celsius (ºC).
 #' @param dates Matrix containing the full range of dates corresponding to "tx" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param op Type of output. If op = "first", the function returns the first day (date format) when the first event is triggered. If op =='doy', julian day is returned. If op = "number", the funciton returns the number of events occurred in the year. The default value is "first".
 #' @param year (Optional) Vector with years of interest (e.g. 1990:1995).
@@ -959,14 +959,14 @@ EHE <- function(tx, dates, op = "first", year = NULL, year.start = NULL, year.en
 # )
 
 
-#########
+############
 ## GDD_WI ##
-#########
+############
 #' @title Growing Degree Days (GDD_WI)
 #' @description Growing Degree Day (GDD_WI) or Winkler index. Useful as a zoning tool to differentiate between grape varieties and climate (Winkler et al. 1974).
 #' @return The sum of growing-degree-days is returned as a numeric value.
-#' @param tn Vector with daily minimum temperature
-#' @param tx Vector with daily maximum temperature
+#' @param tn Vector with daily minimum temperature. The units need to be degrees Celsius (ºC).
+#' @param tx Vector with daily maximum temperature. The units need to be degrees Celsius (ºC).
 #' @param dates Matrix containing the full range of dates corresponding to "tx" and "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param lat Numeric value indicating the latitude of location.
 #' @param year (Optional) Vector with years of interest (e.g. 1990:1995)
@@ -1075,8 +1075,8 @@ GDD_WI <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, ye
 #' @title Huglin Heliothermal Index (HI)
 #' @description Huglin Heliothermal Index (HI). Useful as a zoning tool (Huglin 1978).
 #' @return Number of Huglin index (per year)
-#' @param tx Vector with daily maximum temperature
-#' @param tm Vector with daily mean temperature
+#' @param tx Vector with daily maximum temperature. The units need to be degrees Celsius (ºC).
+#' @param tm Vector with daily mean temperature. The units need to be degrees Celsius (ºC).
 #' @param dates Matrix containing the full range of dates corresponding to "tx" and "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param lat Numeric value indicating the latitude of location.
 #' @param year (Optional) Vector with years of interest (e.g. 1990:1995)
@@ -1201,8 +1201,8 @@ HI <- function(tx, tm, dates, lat = NULL, year = NULL, year.start = NULL, year.e
 #' @title Biologically effective degree-days (BEDD)
 #' @description Biologically effective degree-days (BEDD). Gladstones, J. (1992).
 #' @return The sum of degree-days (BEDD) is returned as a numeric value.
-#' @param tn Vector with daily minimum temperature
-#' @param tx Vector with daily maximum temperature
+#' @param tn Vector with daily minimum temperature. The units need to be degrees Celsius (ºC).
+#' @param tx Vector with daily maximum temperature. The units need to be degrees Celsius (ºC).
 #' @param dates Matrix containing the full range of dates corresponding to "tx" and "tn" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param lat Numeric value indicating the latitude of location.
 #' @param year (Optional) Vector with years of interest (e.g. 1990:1995)
@@ -1215,8 +1215,8 @@ HI <- function(tx, tm, dates, lat = NULL, year = NULL, year.start = NULL, year.e
 #' @examples
 #'
 #' index <- BEDD(tn, tx, dates, lat = 26) # call to the function
-#' index <- BEDD(tn, tx, dates,
-#'   lat = 26, # call to the function
+#' index <- BEDD(tn, tx, dates,           # call to the function
+#'   lat = 26, 
 #'   year = 1994:2018
 #' )
 #' @export
@@ -1334,8 +1334,8 @@ BEDD <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year
 #' @title Branas, Bernon and Levandoux index (BBLI)
 #' @description Branas, Bernon and Levandoux index (BBLI, Branas et al 1946)
 #' @return Number of Branas, Bernon and Levandoux index (per year)
-#' @param tm Vector with daily mean temperature
-#' @param pr Vector with daily precipitation
+#' @param tm Vector with daily mean temperature. The units need to be degrees Celsius (ºC).
+#' @param pr Vector with daily precipitation. The units need to be kg/(m^2) or mm.
 #' @param dates Matrix containing the full range of dates corresponding to "tm" and "pr" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param lat Numeric value indicating the latitude of location.
 #' @param year (Optional) Vector with years of interest (e.g. 1990:1995)
@@ -1344,7 +1344,7 @@ BEDD <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year
 #' @param pnan Any year with a percentage of NA data above "pnan" will be ignored
 #' @details The BBLI takes into account  the influence  of  mean temperature  and
 #' precipitation  on  grape yield  and  wine  quality. This  index  is  the  sum
-#' of  the products of monthly mean temperature (tm, in Celsius) and monthly
+#' of the products of monthly mean temperature (tm, in Celsius) and monthly
 #' accumulated  precipitation  amount  (pr, in mm) during the 1st April to
 #' 31st August season (Northern Hemisphere) or 1st October to 28st February (Southern Hemisphere).
 #'
