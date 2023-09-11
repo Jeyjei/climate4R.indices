@@ -1047,10 +1047,14 @@ GDD_WI <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, ye
         # asking for a minimum of pnan (%) of non-missing days
         if (sum(is.na(tx.year)) < 0.01 * pnan * length(tx.year) & sum(is.na(tn.year)) < 0.01 * pnan * length(tn.year)) {
 
+          # Eliminate the rows with NA
+          combined_matrix <- cbind(tx.year, tn.year)
+          combined_matrix <- combined_matrix[complete.cases(combined_matrix), ]
+
           # Calculate the index
           index[year == iyear] <-
             sum(
-              apply(cbind(tx.year, tn.year), 1, function(temps) {
+              apply(combined_matrix, 1, function(temps) {
                 max(((temps[1] + temps[2]) / 2) - 10, 0, na.rm = TRUE)
               }),
               na.rm = TRUE
@@ -1175,10 +1179,14 @@ HI <- function(tx, tm, dates, lat = NULL, year = NULL, year.start = NULL, year.e
         if (sum(is.na(tx.year)) < 0.01 * pnan * length(tx.year) &
           sum(is.na(tm.year)) < 0.01 * pnan * length(tm.year)) {
 
+          # Eliminate the rows with NA
+          combined_matrix <- cbind(tm.year, tx.year)
+          combined_matrix <- combined_matrix[complete.cases(combined_matrix), ]
+
           # Calculate the index
           index[year == iyear] <-
             K * sum(
-              apply(cbind(tm.year, tx.year), 1, function(temps) {
+              apply(combined_matrix, 1, function(temps) {
                 max(((temps[1] - 10) + (temps[2] - 10)) / 2, 0, na.rm = TRUE)
               }),
               na.rm = TRUE
@@ -1217,7 +1225,7 @@ HI <- function(tx, tm, dates, lat = NULL, year = NULL, year.start = NULL, year.e
 #' @examples
 #'
 #' index <- BEDD(tn, tx, dates, lat = 26) # call to the function
-#' index <- BEDD(tn, tx, dates,           # call to the function
+#' index <- BEDD(tn, tx, dates, # call to the function
 #'   lat = 26,
 #'   year = 1994:2018
 #' )
@@ -1301,10 +1309,14 @@ BEDD <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year
         if (sum(is.na(tx.year)) < 0.01 * pnan * length(tx.year) &
           sum(is.na(tn.year)) < 0.01 * pnan * length(tn.year)) {
 
+          # Eliminate rows with NA
+          combined_matrix <- cbind(tx.year, tn.year, tx.year - tn.year)
+          combined_matrix <- combined_matrix[complete.cases(combined_matrix), ]
+
           # Calculate the index
           index[year == iyear] <-
             sum(
-              apply(cbind(tx.year, tn.year, tx.year - tn.year), 1, function(temps, K) {
+              apply(combined_matrix, 1, function(temps, K) {
                 if (temps[3] > 13) {
                   dtr_adj <- 0.25 * (temps[3] - 13)
                 } else if (temps[3] >= 10 & temps[3] <= 13) {
@@ -1463,5 +1475,4 @@ BBLI <- function(tm, pr, dates, lat = NULL, year = NULL, year.start = NULL, year
 # index <- BBLI(tm, pr, dates, lat = 26) # call to the function
 # index <- BBLI(tm, pr, dates,
 #   lat = 26, # call to the function
-#   year = 1994:2018
 #   year = 1994:2018
