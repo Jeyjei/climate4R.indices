@@ -188,7 +188,7 @@ TM_cold <- function(tn, dates, type_output = "temp", year = NULL, year.start = N
 #' @title Warmest month of the year.
 #' @description Calculates the mean temperature of the warmest month of the year.
 #' @return Depending on argument type, the output will be a numeric value with the month (type_output = "month") or with temperature (type_output = "temp") per year.
-#' @param tx Vector with daily maximum temperature. 
+#' @param tx Vector with daily maximum temperature.
 #' @param dates Matrix containing the full range of dates corresponding to "tx" (ndates x 3 size); e.g. rbind(c(1995, 3, 1), c(1995, 3, 2), ...)
 #' @param type_output Type of output. It can be "temp" for temperature or "month" for the number of the warmest month. The default value is "temp".
 #' @param year (Optional) Vector with years of interest (e.g. 1990:1995).
@@ -1051,8 +1051,9 @@ GDD_WI <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, ye
           index[year == iyear] <-
             sum(
               apply(cbind(tx.year, tn.year), 1, function(temps) {
-                max(((temps[1] + temps[2]) / 2) - 10, 0)
-              })
+                max(((temps[1] + temps[2]) / 2) - 10, 0, na.rm = TRUE)
+              }),
+              na.rm = TRUE
             )
         }
       }
@@ -1178,8 +1179,9 @@ HI <- function(tx, tm, dates, lat = NULL, year = NULL, year.start = NULL, year.e
           index[year == iyear] <-
             K * sum(
               apply(cbind(tm.year, tx.year), 1, function(temps) {
-                max(((temps[1] - 10) + (temps[2] - 10)) / 2, 0)
-              })
+                max(((temps[1] - 10) + (temps[2] - 10)) / 2, 0, na.rm = TRUE)
+              }),
+              na.rm = TRUE
             )
         }
       }
@@ -1216,7 +1218,7 @@ HI <- function(tx, tm, dates, lat = NULL, year = NULL, year.start = NULL, year.e
 #'
 #' index <- BEDD(tn, tx, dates, lat = 26) # call to the function
 #' index <- BEDD(tn, tx, dates,           # call to the function
-#'   lat = 26, 
+#'   lat = 26,
 #'   year = 1994:2018
 #' )
 #' @export
@@ -1310,8 +1312,9 @@ BEDD <- function(tn, tx, dates, lat = NULL, year = NULL, year.start = NULL, year
                 } else if (temps[3] < 10) {
                   dtr_adj <- 0.25 * (temps[3] - 10)
                 }
-                min(((max(((temps[1] + temps[2]) / 2) - 10, 0) * K) + dtr_adj), 9)
-              }, K)
+                min(((max(((temps[1] + temps[2]) / 2) - 10, 0, na.rm = TRUE) * K) + dtr_adj), 9, na.rm = TRUE)
+              }, K),
+              na.rm = TRUE
             )
         }
       }
@@ -1437,13 +1440,13 @@ BBLI <- function(tm, pr, dates, lat = NULL, year = NULL, year.start = NULL, year
           df_month.year <- df.year %>%
             group_by(Year, Month) %>%
             summarise(
-              pr_m = sum(pr_y),
-              tm_m = mean(tm_y), .groups = "drop"
+              pr_m = sum(pr_y, na.rm = TRUE),
+              tm_m = mean(tm_y, na.rm = TRUE), .groups = "drop"
             ) %>%
             mutate(TxP_m = pr_m * tm_m)
 
           # Calculate the index
-          index[year == iyear] <- sum(df_month.year[["TxP_m"]])
+          index[year == iyear] <- sum(df_month.year[["TxP_m"]], na.rm = TRUE)
 
 
           # Eliminate the dataframes from memory
@@ -1460,4 +1463,5 @@ BBLI <- function(tm, pr, dates, lat = NULL, year = NULL, year.start = NULL, year
 # index <- BBLI(tm, pr, dates, lat = 26) # call to the function
 # index <- BBLI(tm, pr, dates,
 #   lat = 26, # call to the function
+#   year = 1994:2018
 #   year = 1994:2018
